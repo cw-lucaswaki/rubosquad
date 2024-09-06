@@ -31,6 +31,14 @@ Rubosquad uses your project's existing RuboCop configuration. Ensure you have a 
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
+
+This command will:
+1. Identify Ruby files that have changed compared to the `main` branch
+2. Run RuboCop on these files with auto-correct enabled
+3. Apply auto-corrections where possible
+4. Display a summary of offenses and corrections
+
+### Example Output
 To install this gem onto your local machine, run `bundle exec rake install`.
 
 ## Contributing
@@ -50,3 +58,32 @@ The gem is available as open source under the terms of the [MIT License](https:/
 ## Code of Conduct
 
 Everyone interacting in the Rubosquad project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](CODE_OF_CONDUCT.md).
+
+## Important Notes
+
+### Caution with Auto-corrections
+
+- The `rubocop -A` command applies auto-corrections to the entire file.
+- Be cautious when using this feature, especially on large files:
+  - Even if you've changed only one line in a 10,000-line file, RuboCop will enforce changes throughout the entire file.
+- This behavior is due to how Rubosquad identifies changed files:
+  - It uses `git diff --name-only main | grep '\.rb$'` to find modified Ruby files.
+  - Then it runs `rubocop -A` on these files.
+
+### Best Practices
+
+1. Review changes carefully before committing.
+2. Consider using `rubocop -a` (safe auto-correct) instead of `-A` for more conservative corrections.
+3. Run Rubosquad on a clean working directory to avoid unintended changes.
+4. Use version control and commit frequently to easily revert unwanted changes.
+
+### Customization
+
+You can modify Rubosquad's behavior by editing the script. The core functionality is located in: '''ruby:lib/rubosquad.rb'''
+
+Consider adding options to:
+- Choose between `-a` and `-A` auto-correct modes.
+- Limit the number of lines affected in large files.
+- Provide a dry-run option to preview changes without applying them.
+
+For more information on RuboCop's auto-correct modes, refer to the [official RuboCop documentation](https://docs.rubocop.org/rubocop/usage/auto_correct.html).
